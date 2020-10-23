@@ -44,7 +44,7 @@ function start(key)
     ["type"] = "login",
     ["privatekey"] = pKey
   }
-  Websocket.send(Z)
+  Websocket.send(json.stringify(Z))
   wsid=wsid+1
   while true do
     local R = Websicket.receive()
