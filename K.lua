@@ -46,7 +46,7 @@ function start(key)
   }
   Websocket.send(Z)
   wsid=wsid+1
-  while true
+  while true do
     local R = Websicket.receive()
     if R.find("\"id\": "..wsid-1.."," then
       if R.find("balance") then
@@ -55,5 +55,5 @@ function start(key)
         return false,"Unable to login. Are your credentials correct?"
       end
     end
-  return true
+  end
 end
