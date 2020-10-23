@@ -5,8 +5,8 @@ local subscriptions = {}
 local availableSubscriptions = {
   blocks = "block",
   myBlocks = "block",
-  transactions = "transaction",
-  myTransactions = "transaction",
+  transactions = "transactions",
+  myTransactions = "ownTransactions",
   names = "name",
   myNames = "name",
   keepalive = "keepalive"
@@ -18,18 +18,42 @@ function listen(event)
   if subscriptions[event] then return false,"This event is already being listened for." end
   if not availableSubscripts[event] then return false,"Attempted to listen for a invalid event." end
   subscriptions[event] = true
+  local Z = {
+    id = wsid,
+    type = "subscribe",
+    event = availableSubscriptions[event]
+  }
+  Websocket.send(Z)
+  wsid=wsid+1
+  while true do
+    local R = Websocket.receive()
+    if R.find("/"ok\": true")
+      return true
+    else
+      return false,"A unknown error occured."
+    end
+  end
   return true
 end
 
 function stopListen(event)
   if not subscriptions[event] then return false,"This event is not being listened for." end
   subscriptions[event] = false
+  local Z = {
+    id = wsid,
+    type = "unsubscribe",
+    event = availableSubscriptions[event]
+  }
+  Websocket.send(Z)
+  wsid=wsid+1
   return true
 end
 
 local function SubscribedEvent(msg)
   local data = json.decode(msg)
-  
+  if data.type == "transaction" then
+    os.queue_event("krist_transaction", data)
+  end
 end
 
 function start(key)
