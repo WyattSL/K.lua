@@ -1,3 +1,5 @@
+local json = require("/
+
 local pKey;
 local subscriptions = {}
 local availableSubscriptions = {
@@ -15,6 +17,16 @@ function listen(event)
   if not availableSubscripts[event] then return false,"Attempted to listen for a invalid event." end
   subscriptions[event] = true
   return true
+end
+
+function stopListen(event)
+  if not subscriptions[event] then return false,"This event is not being listened for." end
+  subscriptions[event] = false
+  return true
+end
+
+local function SubscribedEvent(msg)
+  local data = json.decode(msg)
 end
 
 function start(key)
